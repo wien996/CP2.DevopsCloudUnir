@@ -1,0 +1,75 @@
+- name: ACR and Apps
+  hosts: localhost
+  connection: local
+  vars_files:
+    - secrets.yml
+  vars:
+    app_namespace: "namespaceKubernetes"
+    kube_config_path: "/mnt/c/Users/danie/.kube/config"
+  become: true
+  roles:
+    - acr
+    - vm
+    - aks
+
+    # - app
+
+# - name: Setup AKS and deploy application
+#   hosts: localhost
+#   vars_files:
+#     - secrets.yml
+#   tasks:
+#     - name: Create namespace in AKS
+#       k8s:
+#         definition:
+#           apiVersion: v1
+#           kind: Namespace
+#           metadata:
+#             name: "{{ app_namespace }}"
+#         state: present
+
+
+# - name: Setup AKS and deploy application
+#   hosts: localhost
+#   vars_files:
+#     - secrets.yml
+#   tasks:
+#     - name: Deploy app to AKS
+#       include_role:
+#         name: aks
+
+#     - name: Create ACR secret in AKS
+#       k8s:
+#         definition:
+#           apiVersion: v1
+#           kind: Secret
+#           metadata:
+#             name: acr-secret
+#           dockerConfigJson:
+#             .dockerconfigjson: "{{ lookup('file', 'acr-dockerconfig.json') }}"
+#         namespace: "{{ app_namespace }}"
+#         state: present
+
+#     - name: Deploy Redis to AKS
+#       k8s:
+#         definition: "{{ lookup('template', 'redis_deployment_template.yml.j2') }}"
+#         namespace: "{{ app_namespace }}"
+#         state: present
+
+#     - name: Deploy Azure Vote Front to AKS
+#       k8s:
+#         definition: "{{ lookup('template', 'azure_vote_front_template.yml.j2') }}"
+#         namespace: "{{ app_namespace }}"
+#         state: present
+
+#     - name: Expose Redis service using LoadBalancer
+#       k8s:
+#         definition: "{{ lookup('file', 'redis-service.yaml') }}"
+#         state: present
+
+#     - name: Expose Azure Vote Front service using LoadBalancer
+#       k8s:
+#         definition: "{{ lookup('file', 'azure-vote-front-service.yaml') }}"
+#         state: present
+
+

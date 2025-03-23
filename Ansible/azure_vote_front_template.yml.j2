@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-vote-front
+  namespace: {{ app_namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azure-vote-front
+  template:
+    metadata:
+      labels:
+        app: azure-vote-front
+    spec:
+      containers:
+        - name: azure-vote-front
+          image: "{{ acr_registry }}/azure-vote-front:v1"
+          ports:
+            - containerPort: 80
