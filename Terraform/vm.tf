@@ -2,7 +2,7 @@ resource "azurerm_virtual_network" "vn" {
   name                = "dpbCP2_vn"
   location            = var.location
   resource_group_name = var.resource_group_name
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["XX.X.X.X/XX"]
   tags = var.tags
 }
 
@@ -10,7 +10,7 @@ resource "azurerm_subnet" "sn" {
   name                 = "dpbCP2_sn"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = ["XX.X.X.X/XX"]
 }
 
 resource "azurerm_network_interface" "nic" {
@@ -22,7 +22,7 @@ resource "azurerm_network_interface" "nic" {
     name                          = "dpbCP2_ipc"
     subnet_id                     = azurerm_subnet.sn.id
     private_ip_address_allocation = "Dynamic"
-    private_ip_address            = "10.0.1.10"
+    private_ip_address            = "XX.X.X.X"
     public_ip_address_id          = azurerm_public_ip.pip.id
   }
   tags = var.tags
