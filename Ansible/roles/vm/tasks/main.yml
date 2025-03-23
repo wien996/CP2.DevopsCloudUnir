@@ -1,0 +1,29 @@
+# tasks/main.yml (Rol VM)
+  - name: Update apt repositories
+    apt:
+      update_cache: yes
+
+  - name: Install Podman
+    apt:
+      name: podman
+      state: present
+
+  - name: Login to ACR
+    containers.podman.podman_login:
+      username: "{{ acr_username }}"
+      password: "{{ acr_password }}"
+      registry: "{{ acr_name }}.azurecr.io"
+
+  - name: Run Nginx server with Podman
+    containers.podman.podman_container:
+      name: nginx_container
+      image: "dpbCP2acr77777.azurecr.io/nginx:latest"
+      state: started
+      ports:
+      - "0.0.0.0:80:80"
+
+  - name: Apply LoadBalancer service for Nginx
+    k8s:
+      kubeconfig: "/mnt/c/Users/danie/.kube/config"
+      state: present
+      definition: "{{ lookup('file', 'nginx-loadbalancer.yml') }}"
