@@ -1,0 +1,28 @@
+# tasks/main.yml (Rol ACR)
+- name: Download images
+  containers.podman.podman_image:
+    name: "{{ item.source }}/{{ item.name }}:{{ item.tag }}"
+  loop: "{{ container_images }}"
+
+- name: Tag images
+  containers.podman.podman_tag:
+    image: "{{ item.source }}/{{ item.name }}:{{ item.tag }}"
+    target_names: 
+      - "{{ acr_name }}.azurecr.io/{{ item.name }}:{{ item.tag }}"
+  loop: "{{ container_images }}"
+
+
+- name: ACR login
+  containers.podman.podman_login:
+    username: "{{ acr_username }}"
+    password: "{{ acr_password }}"
+    registry: "{{ acr_name }}.azurecr.io"
+  when: azure_acr_username is defined and azure_acr_password is defined
+
+- name: Push images
+  containers.podman.podman_image:
+    name: "{{ acr_name }}.azurecr.io/{{ item.name }}:{{ item.tag }}"
+    push: yes
+    username: "{{ acr_username }}"
+    password: "{{ acr_password }}"
+  loop: "{{ container_images }}"
