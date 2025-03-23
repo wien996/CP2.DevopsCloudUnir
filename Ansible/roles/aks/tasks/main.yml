@@ -1,0 +1,57 @@
+# tasks/main.yml (Rol AKS)
+- name: Create secret for ACR
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: acr-secret
+      dockerConfigJson:
+        .dockerconfigjson: "{{ lookup('file', 'acr-dockerconfig.json') }}"
+    namespace: "{{ app_namespace }}"
+
+- name: Create namespace
+  k8s:
+    definition:
+      kind: Namespace
+      apiVersion: v1
+      metadata:
+        name: "{{ app_namespace }}"
+
+- name: Deploy Redis application
+  k8s:
+    definition: "{{ lookup('template', 'redis_deployment_template.yml.j2') }}"
+    namespace: "{{ app_namespace }}"
+
+- name: Deploy Azure Vote Front application
+  k8s:
+    definition: "{{ lookup('template', 'azure_vote_front_template.yml.j2') }}"
+    namespace: "{{ app_namespace }}"
+
+- name: Create namespace in AKS
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ app_namespace }}"
+    state: present
+
+- name: Deploy Redis to AKS
+  k8s:
+    definition: "{{ lookup('template', 'redis_deployment_template.yml.j2') }}"
+    namespace: "{{ app_namespace }}"
+    state: present
+
+- name: Deploy Azure Vote Front to AKS
+  k8s:
+    definition: "{{ lookup('template', 'azure_vote_front_template.yml.j2') }}"
+    namespace: "{{ app_namespace }}"
+    state: present
+
+- name: Expose Azure Vote Front service using LoadBalancer
+  k8s:
+    definition: "{{ lookup('file', 'azure-vote-front-service.yaml') }}"
+    state: present
+
+
